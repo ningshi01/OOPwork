@@ -74,21 +74,30 @@ public class TheMachine extends Character/*机体类*/{
         this.speed = speed;
     }
     public boolean Flag_selectable=true;
-    public TheMachine(int x, int y, TheFlame tf) {
+
+    /***
+     *
+     * @param x
+     * @param y
+     * @param tf
+     * @param for_player
+     * 此处传入for_player值是为了分别主副机体
+     */
+    public TheMachine(int x, int y, TheFlame tf,int for_player) {
         this.x = x;
         this.y = y;
         this.tf=tf;
+        this.for_player=for_player;
+        if (for_player==1) degree=0;
+        else degree=180;
     }
-
+    int degree;
     public void paint(Graphics g) {
-//        Color c0=g.getColor();
-//        g.setColor(Color.lightGray);
-//        g.fillRect(x, y, 50, 50);
-//        g.setColor(c0);
-
-        BufferedImage image2 = ForImage.rotateImage(ForImage.image2, tf.degree);
-        if(for_player==2)
-            image2 = ForImage.rotateImage(ForImage.image2, 180);
+        //Color c0=g.getColor();
+        //g.setColor(Color.lightGray);
+        //g.fillRect(x, y, 50, 50);
+        //g.setColor(c0);
+        BufferedImage image2 = ForImage.rotateImage(ForImage.Mac1,degree);
         g.drawImage(image2,x,y,Width,Height,null);
         Color c=g.getColor();
         g.setColor(Color.cyan);
@@ -112,11 +121,21 @@ public class TheMachine extends Character/*机体类*/{
         if(!moving) return;
         if (!K_aim)
             spin();
-        else {
-            double deta_x=(double) (tf.enemy.getX()-x);
-            double deta_y=(double) (y-tf.enemy.getY());
-            double re=div(deta_x,deta_y,6);
-            tf.degree= (int) Math.toDegrees(Math.atan(re));
+        if(K_aim) {
+            spin();
+            if((y - tf.enemy.getY())!=0){
+                double deta_x = (double) (tf.enemy.getX() - x);
+                double deta_y = (double) (y - tf.enemy.getY());
+                double re = div(deta_x, deta_y, 6);
+                degree = (int) Math.toDegrees(Math.atan(re));
+                if (deta_y < 0) {
+                    degree -= 180;
+                    revise();
+                }
+            }else{
+                if (tf.enemy.getX() > x) degree=90;
+                else degree=270;
+            }
         }
         if(flag_up)    y -= speed;
         if(flag_down)  y += speed;
@@ -128,21 +147,44 @@ public class TheMachine extends Character/*机体类*/{
         if(y>=TheFlame.dim.height-50) y=TheFlame.dim.height-50;
     }
 
+    /***
+     *
+     * @param type
+     * 注意：
+     * 弹幕类型可加为：
+     * Z弹幕  辅助瞄准状态下Z弹幕
+     * X弹幕  辅助瞄准状态下X弹幕
+     * C弹幕  辅助瞄准状态下C弹幕
+     */
     public void fire(int type) {
-        if(type==1){
-            tf.B0=new Barrage(this.x+20,this.y+20,tf,type);
-            judgeDir(tf.B0);
-            tf.barrages.add(tf.B0);
-        }
-        else if(type==2){
-            tf.B0=new Barrage(this.x+20,this.y+20,tf,type);
-            judgeDir(tf.B0);
-            tf.barrages.add(tf.B0);
-        }
-        else if(type==3){
-            tf.B0=new Barrage(this.x+20,this.y+20,tf,type);
-            judgeDir(tf.B0);
-            tf.barrages.add(tf.B0);
+        if(for_player==1){
+            if (type == 1) {
+                tf.B1 = new Barrage(this.x + 20, this.y + 20, tf, this, type);
+                judgeDir(tf.B1);
+                tf.barrages1.add(tf.B1);
+            } else if (type == 2) {
+                tf.B1 = new Barrage(this.x + 20, this.y + 20, tf, this, type);
+                judgeDir(tf.B1);
+                tf.barrages1.add(tf.B1);
+            } else if (type == 3) {
+                tf.B1 = new Barrage(this.x + 20, this.y + 20, tf, this, type);
+                judgeDir(tf.B1);
+                tf.barrages1.add(tf.B1);
+            }
+        }else{
+            if (type == 1) {
+                tf.B2 = new Barrage(this.x + 20, this.y + 20, tf, this, type);
+                judgeDir(tf.B2);
+                tf.barrages2.add(tf.B2);
+            } else if (type == 2) {
+                tf.B2 = new Barrage(this.x + 20, this.y + 20, tf, this, type);
+                judgeDir(tf.B2);
+                tf.barrages2.add(tf.B2);
+            } else if (type == 3) {
+                tf.B2 = new Barrage(this.x + 20, this.y + 20, tf, this, type);
+                judgeDir(tf.B2);
+                tf.barrages2.add(tf.B2);
+            }
         }
     }
 
@@ -152,111 +194,111 @@ public class TheMachine extends Character/*机体类*/{
      * 传入的弹幕
      */
     public void judgeDir(Barrage B){
-        B.degree=tf.degree;
+        B.degree=degree;
         B.setAllFlag(flag_up,flag_down,flag_left,flag_right);
     }
     private void revise(){
-        while(tf.degree<0){
-            tf.degree+=360;
+        while(degree<0){
+            degree+=360;
         }
-        while(tf.degree>=360){
-            tf.degree-=360;
+        while(degree>=360){
+            degree-=360;
         }
     }
     private void spin(){
         //up
         if(flag_up&&!flag_down&&!flag_left&&!flag_right){
             revise();
-            if((tf.degree<=180 && tf.degree>0)&& tf.degree!=0) {
-                tf.degree -= spin_speed;
+            if((degree<=180 && degree>0)&& degree!=0) {
+                degree -= spin_speed;
                 revise();
             }
-            if(tf.degree>180 && tf.degree!=360 && tf.degree!=0) {
-                tf.degree += spin_speed;
+            if(degree>180 && degree!=360 && degree!=0) {
+                degree += spin_speed;
                 revise();
             }
         }
         //down
         if(!flag_up&&flag_down&&!flag_left&&!flag_right){
             revise();
-            if((tf.degree<=180 && tf.degree>=0)&& tf.degree!=180) {
-                tf.degree += spin_speed;
+            if((degree<=180 && degree>=0)&& degree!=180) {
+                degree += spin_speed;
                 revise();
             }
-            if(tf.degree>180 && tf.degree!=180) {
-                tf.degree -= spin_speed;
+            if(degree>180 && degree!=180) {
+                degree -= spin_speed;
                 revise();
             }
         }
         //left
         if(!flag_up&&!flag_down&&flag_left&&!flag_right){
             revise();
-            if(((tf.degree<=90 && tf.degree>=0) || tf.degree>270)&& tf.degree!=270) {
-                tf.degree -= spin_speed;
+            if(((degree<=90 && degree>=0) || degree>270)&& degree!=270) {
+                degree -= spin_speed;
                 revise();
             }
-            if((tf.degree>90 && tf.degree<270)&& tf.degree!=270) {
-                tf.degree += spin_speed;
+            if((degree>90 && degree<270)&& degree!=270) {
+                degree += spin_speed;
                 revise();
             }
         }
         //right
         if(!flag_up&&!flag_down&&!flag_left&&flag_right){
             revise();
-            if(((tf.degree<=90 && tf.degree>=0) || tf.degree>270)&& tf.degree!=90) {
-                tf.degree += spin_speed;
+            if(((degree<=90 && degree>=0) || degree>270)&& degree!=90) {
+                degree += spin_speed;
                 revise();
             }
-            if((tf.degree>90 && tf.degree<=270)&& tf.degree!=90) {
-                tf.degree -= spin_speed;
+            if((degree>90 && degree<=270)&& degree!=90) {
+                degree -= spin_speed;
                 revise();
             }
         }
         //up+right
         if(flag_up&&!flag_down&&!flag_left&&flag_right){
             revise();
-            if(((tf.degree<=45 && tf.degree>=0) || tf.degree>225)&& tf.degree!=45) {
-                tf.degree += spin_speed;
+            if(((degree<=45 && degree>=0) || degree>225)&& degree!=45) {
+                degree += spin_speed;
                 revise();
             }
-            if((tf.degree>45 && tf.degree<=225)&& tf.degree!=45) {
-                tf.degree -= spin_speed;
+            if((degree>45 && degree<=225)&& degree!=45) {
+                degree -= spin_speed;
                 revise();
             }
         }
         //up+left
         if(flag_up&&!flag_down&&flag_left&&!flag_right){
             revise();
-            if(((tf.degree<=135 && tf.degree>=0) || tf.degree>315)&& tf.degree!=315) {
-                tf.degree -= spin_speed;
+            if(((degree<=135 && degree>=0) || degree>315)&& degree!=315) {
+                degree -= spin_speed;
                 revise();
             }
-            if((tf.degree>135 && tf.degree<315)&& tf.degree!=315) {
-                tf.degree += spin_speed;
+            if((degree>135 && degree<315)&& degree!=315) {
+                degree += spin_speed;
                 revise();
             }
         }
         //down+right
         if(!flag_up&&flag_down&&!flag_left&&flag_right){
             revise();
-            if(((tf.degree<135 && tf.degree>=0) || tf.degree>315)&& tf.degree!=135) {
-                tf.degree += spin_speed;
+            if(((degree<135 && degree>=0) || degree>315)&& degree!=135) {
+                degree += spin_speed;
                 revise();
             }
-            if((tf.degree>135 && tf.degree<=315)&& tf.degree!=135) {
-                tf.degree -= spin_speed;
+            if((degree>135 && degree<=315)&& degree!=135) {
+                degree -= spin_speed;
                 revise();
             }
         }
         //down+left
         if(!flag_up&&flag_down&&flag_left&&!flag_right){
             revise();
-            if(((tf.degree<=45 && tf.degree>=0) || tf.degree>225)&& tf.degree!=225) {
-                tf.degree -= spin_speed;
+            if(((degree<=45 && degree>=0) || degree>225)&& degree!=225) {
+                degree -= spin_speed;
                 revise();
             }
-            if((tf.degree>45 && tf.degree<225)&& tf.degree!=225) {
-                tf.degree += spin_speed;
+            if((degree>45 && degree<225)&& degree!=225) {
+                degree += spin_speed;
                 revise();
             }
         }
@@ -264,6 +306,6 @@ public class TheMachine extends Character/*机体类*/{
     public static double div(double v1, double v2, int scale)  {
         BigDecimal b1 = new BigDecimal(Double.toString(v1));
         BigDecimal b2 = new BigDecimal(Double.toString(v2));
-        return b1.divide(b2, scale, BigDecimal.ROUND_HALF_UP).doubleValue(); //ROUND_HALF_UP:四舍五入
+        return b1.divide(b2, scale, 4).doubleValue(); //ROUND_HALF_UP:四舍五入
     }
 }

@@ -7,20 +7,22 @@ import java.io.IOException;
 
 public class ForImage {
     //存储图片的类
-    public static BufferedImage background, image2, bullet,Background1;//新图直接加在这里
+    public static BufferedImage background, Mac1, Mac_barrage0, Background;//新图直接加在这里
     static {
         try {
             //图片移入项目的Images文件夹再如下路径加入即可
             //注意一定要是原.jpeg文件否则绘图时加载崩掉（图片转jpeg格式网址：https://www.gaitubao.com/jpg-gif-png）
             //自机的角色贴图如果有底色会不能适配旋转方法（此处找到贴图需要去底色的话参考网址：https://tools.kalvinbg.cn/image/bgRemover）
-            background = ImageIO.read(ForImage.class.getClassLoader().getResourceAsStream("images/1.jpeg"));
-            image2     = ImageIO.read(ForImage.class.getClassLoader().getResourceAsStream("images/2（0）.jpeg"));
-            bullet     = ImageIO.read(ForImage.class.getClassLoader().getResourceAsStream("images/3.gif"));
-            Background1= ImageIO.read(ForImage.class.getClassLoader().getResourceAsStream("images/1.gif"));
+            background   = ImageIO.read(ForImage.class.getClassLoader().getResourceAsStream("images/试作背景.jpeg"));
+            Mac1         = ImageIO.read(ForImage.class.getClassLoader().getResourceAsStream("images/芙兰朵露.jpeg"));
+            Mac_barrage0 = ImageIO.read(ForImage.class.getClassLoader().getResourceAsStream("images/Mac_barrage0.gif"));
+            Background   = ImageIO.read(ForImage.class.getClassLoader().getResourceAsStream("images/背景.gif"));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
+
     /**
      * 旋转图片为指定角度
      *
@@ -28,7 +30,7 @@ public class ForImage {
      * @param degree        旋转角度
      * @return buffered image
      */
-public static BufferedImage rotateImage(BufferedImage bufferedimage, int degree){
+    public static BufferedImage rotateImage(BufferedImage bufferedimage, int degree){
         int w= bufferedimage.getWidth();// 得到图片宽度。
         int h= bufferedimage.getHeight();// 得到图片高度。
         int type= bufferedimage.getColorModel().getTransparency();// 得到图片透明度。
@@ -40,4 +42,6 @@ public static BufferedImage rotateImage(BufferedImage bufferedimage, int degree)
         graphics2d.dispose();
         return img;// 返回复制好的图片，原图片依然没有变，没有旋转，下次还可以使用。
     }
+
+
 }

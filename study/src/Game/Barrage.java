@@ -24,33 +24,36 @@ public class Barrage /*弹幕类*/{
         this.flag_right=f4;
     }
     public Barrage(){}
-    public Barrage(int x, int y, TheFlame tf, int type) {
+    public Barrage(int x, int y, TheFlame tf,TheMachine mac, int type) {
         this.x = x;
         this.y = y;
         this.tf=tf;
-        this.degree=tf.degree;
+        this.degree=mac.degree;
         this.type=type;
     }
     public void paint(Graphics g){
         if(!live){
-            tf.barrages.remove(this);
+            if(tf.barrages1.indexOf(this)!=-1)
+                tf.barrages1.remove(this);
+            else
+                tf.barrages2.remove(this);
         }
         Color c=g.getColor();
         g.setColor(Color.red);
         g.setColor(c);
         if(type==1) {
 //            g.fillOval(x,y,Width1,High1);
-            BufferedImage bullet = ForImage.rotateImage(ForImage.bullet, degree);
+            BufferedImage bullet = ForImage.rotateImage(ForImage.Mac_barrage0, degree);
             g.drawImage(bullet, x, y, Width1, High1, null);
         }
         else if(type==2) {
 //            g.fillRect(x,y,Width2, High2);
-            BufferedImage bullet = ForImage.rotateImage(ForImage.bullet, degree);
+            BufferedImage bullet = ForImage.rotateImage(ForImage.Mac_barrage0, degree);
             g.drawImage(bullet, x, y, Width2, High2, null);
         }
         else if(type==3){
 //            g.fillRoundRect(x,y,Width3,High3,60,60);
-            BufferedImage bullet = ForImage.rotateImage(ForImage.bullet, degree);
+            BufferedImage bullet = ForImage.rotateImage(ForImage.Mac_barrage0, degree);
             g.drawImage(bullet, x, y, Width3, High3, null);
         }
         move();
@@ -96,7 +99,10 @@ public class Barrage /*弹幕类*/{
         Rectangle r_enemy=new Rectangle(enemy.getX(),enemy.getY(),enemy.getWidth(),enemy.getHeight());
         if(r0.intersects(r_enemy)){
             enemy.setHP(enemy.getHP()-5);
-            tf.barrages.remove(this);
+            if(tf.barrages1.indexOf(this)!=-1)
+                tf.barrages1.remove(this);
+            else
+                tf.barrages2.remove(this);
             enemy.Flag_selectable=false;
         }
     }
