@@ -1,0 +1,59 @@
+register 20373252 Yixiao Li 20373252@buaa.edu.cn x12345678 x12345678
+register 19375030 Xinlei Bao 19375030@buaa.edu.cn x12345678 x12345678
+register 10001 Xueping Shen 10001@buaa.edu.cn x12345678 x12345678
+register 10002 Xiang Gao 10002@buaa.edu.cn x12345678 x12345678
+login 10001 x12345678
+addCourse C2101 oop_autumn
+addCourse C2102 oop_spring
+selectCourse C2101
+addStudent 19375030 20373252
+selectCourse C2102
+addStudent 19375030 20373252
+logout
+login 10002 x12345678
+addCourse C2103 oop_winter
+addCourse C2104 oop_summer
+selectCourse C2103
+addStudent 19375030 20373252
+selectCourse C2104
+addStudent 19375030 20373252
+logout
+
+login 20373252 x12345678
+selectCourse C2101
+requestVM Linux
+startVM
+aaa
+bbb
+ccc
+EOF
+
+logVM
+uploadVM ./data/yixiao_linux.txt
+logout
+login 19375030 x12345678
+selectCourse C2103
+downloadVM ./data/yixiao_linux.txt
+startVM
+ddd
+eee
+fff
+EOF
+logVM
+uploadVM ./data/xinlei_linux.txt
+logout
+login 20373252 x12345678
+selectCourse C2102
+requestVM MacOS
+downloadVM ./data/xinlei_linux.txt
+logVM
+logout
+login 10001 x12345678
+selectCourse C2102
+clearVM 2
+logout
+login 20373252 x12345678
+selectCourse C2102
+logVM
+logout
+QUIT
